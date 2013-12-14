@@ -64,7 +64,7 @@ func TestBrowserError(t *testing.T) {
 	browser.Search("", "")
 
 	go func() {
-		switch event := (<-browser.event).(type) {
+		switch event := (<-browser.Event).(type) {
 		case *DidNotSearchEvent:
 			if event.ErrCode != -72004 { // NSNetServicesBadArgumentError
 				t.Errorf("error is wrong")
@@ -94,7 +94,7 @@ func TestBasic(t *testing.T) {
 			case <- timeout:
 				t.Errorf("search time out")
 				break LOOP
-			case event := <-browser.event:
+			case event := <-browser.Event:
 				switch e := event.(type) {
 				case *FindServiceEvent:
 					if e.Service.Name() == "GoTest" {

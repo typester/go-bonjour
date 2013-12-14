@@ -16,7 +16,7 @@ import (
 type Browser struct {
 	mu sync.Mutex
 	ptr *_Ctype_struct_BonjourBrowser
-	event chan interface{}
+	Event chan interface{}
 }
 
 type FindServiceEvent struct {
@@ -33,7 +33,7 @@ type DidNotSearchEvent struct {
 
 func NewBrowser() *Browser {
 	b := &Browser{}
-	b.event = make(chan interface{})
+	b.Event = make(chan interface{})
 	b.ptr = C.BonjourBrowserNew(unsafe.Pointer(b))
 	runtime.SetFinalizer(b, func (b *Browser) { b.Free() })
 	return b
@@ -66,15 +66,15 @@ func (b *Browser) doSearch(_type string, domain string) {
 }
 
 func (b *Browser) didFoundService(s *Service) {
-	b.event <- &FindServiceEvent{s}
+	b.Event <- &FindServiceEvent{s}
 }
 
 func (b *Browser) didRemoveService(s *Service) {
-	b.event <- &RemoveServiceEvent{s}
+	b.Event <- &RemoveServiceEvent{s}
 }
 
 func (b *Browser) DidNotSearch(errCode int64) {
-	b.event <- &DidNotSearchEvent{errCode}
+	b.Event <- &DidNotSearchEvent{errCode}
 }
 
 //export bonjourDidFoundService
