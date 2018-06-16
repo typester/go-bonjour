@@ -1,8 +1,8 @@
 package bonjour
 
 import (
-	"testing"
 	"github.com/typester/go-cocoa-eventloop"
+	"testing"
 	"time"
 )
 
@@ -91,7 +91,7 @@ func TestBasic(t *testing.T) {
 	LOOP:
 		for {
 			select {
-			case <- timeout:
+			case <-timeout:
 				t.Errorf("search time out")
 				break LOOP
 			case event := <-browser.Event:
@@ -114,12 +114,3 @@ func TestBasic(t *testing.T) {
 	}()
 	eventloop.Run()
 }
-
-
-
-
-
-
-
-
-
