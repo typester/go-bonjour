@@ -1,4 +1,5 @@
 package bonjour
+
 /*
 #cgo CFLAGS: -x objective-c
 #cgo LDFLAGS: -framework Foundation
@@ -8,14 +9,14 @@ import "C"
 import "unsafe"
 
 import (
-	"sync"
-	"runtime"
 	"github.com/typester/go-cocoa-eventloop"
+	"runtime"
+	"sync"
 )
 
 type Browser struct {
-	mu sync.Mutex
-	ptr *_Ctype_struct_BonjourBrowser
+	mu    sync.Mutex
+	ptr   *_Ctype_struct_BonjourBrowser
 	Event chan interface{}
 }
 
@@ -35,7 +36,7 @@ func NewBrowser() *Browser {
 	b := &Browser{}
 	b.Event = make(chan interface{})
 	b.ptr = C.BonjourBrowserNew(unsafe.Pointer(b))
-	runtime.SetFinalizer(b, func (b *Browser) { b.Free() })
+	runtime.SetFinalizer(b, func(b *Browser) { b.Free() })
 	return b
 }
 
@@ -58,10 +59,10 @@ func (b *Browser) doSearch(_type string, domain string) {
 		panic("object is already deallocated")
 	}
 
-	eventloop.Do(func () {
+	eventloop.Do(func() {
 		C.BonjourBrowserSearch(b.ptr, C.CString(_type), C.CString(domain))
-	});
-	
+	})
+
 	b.mu.Unlock()
 }
 
@@ -96,10 +97,3 @@ func bonjourDidNotSearch(ptr unsafe.Pointer, code int64) {
 	b := (*Browser)(ptr)
 	b.DidNotSearch(code)
 }
-
-
-
-
-
-
-

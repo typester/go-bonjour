@@ -1,4 +1,5 @@
 package bonjour
+
 /*
 #cgo CFLAGS: -x objective-c
 #cgo LDFLAGS: -framework Foundation
@@ -8,13 +9,13 @@ import "C"
 import "unsafe"
 
 import (
-	"sync"
-	"runtime"
 	"github.com/typester/go-cocoa-eventloop"
+	"runtime"
+	"sync"
 )
 
 type Service struct {
-	mu sync.Mutex
+	mu  sync.Mutex
 	ptr *_Ctype_struct_BonjourService
 }
 
@@ -27,14 +28,14 @@ func NewService(domain, _type, name string, port int) *Service {
 		C.CString(name),
 		C.int(port),
 	)
-	runtime.SetFinalizer(s, func (s *Service) { s.Free() })
+	runtime.SetFinalizer(s, func(s *Service) { s.Free() })
 	return s
 }
 
 func newServiceFromPtr(ptr unsafe.Pointer) *Service {
 	s := &Service{}
 	s.ptr = C.BonjourServiceNewFromPtr(unsafe.Pointer(s), ptr)
-	runtime.SetFinalizer(s, func (s *Service) { s.Free() })
+	runtime.SetFinalizer(s, func(s *Service) { s.Free() })
 	return s
 }
 
@@ -54,7 +55,7 @@ func (s *Service) Name() string {
 	}
 
 	name := C.GoString(C.BonjourServiceGetName(s.ptr))
-	
+
 	s.mu.Unlock()
 
 	return name
@@ -67,12 +68,11 @@ func (s *Service) Type() string {
 	}
 
 	_type := C.GoString(C.BonjourServiceGetType(s.ptr))
-	
+
 	s.mu.Unlock()
 
 	return _type
 }
-
 
 func (s *Service) Domain() string {
 	s.mu.Lock()
@@ -81,7 +81,7 @@ func (s *Service) Domain() string {
 	}
 
 	domain := C.GoString(C.BonjourServiceGetDomain(s.ptr))
-	
+
 	s.mu.Unlock()
 
 	return domain
@@ -94,7 +94,7 @@ func (s *Service) HostName() string {
 	}
 
 	name := C.GoString(C.BonjourServiceGetHostName(s.ptr))
-	
+
 	s.mu.Unlock()
 
 	return name
@@ -107,7 +107,7 @@ func (s *Service) Port() int {
 	}
 
 	port := int(C.BonjourServiceGetPort(s.ptr))
-	
+
 	s.mu.Unlock()
 
 	return port
@@ -123,7 +123,7 @@ func (s *Service) doPublish() {
 		panic("object is already deallocated")
 	}
 
-	eventloop.Do(func () {
+	eventloop.Do(func() {
 		C.BonjourServicePublish(s.ptr)
 	})
 
@@ -140,7 +140,7 @@ func (s *Service) doStop() {
 		panic("object is already deallocated")
 	}
 
-	eventloop.Do(func () {
+	eventloop.Do(func() {
 		C.BonjourServiceStop(s.ptr)
 	})
 
